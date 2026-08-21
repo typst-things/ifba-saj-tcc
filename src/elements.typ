@@ -44,7 +44,7 @@
     },
     caption: caption,
     numbering: "1",
-    kind: "image",
+    kind: image,
     supplement: [Figura],
   )
 }

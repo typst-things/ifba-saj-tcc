@@ -39,7 +39,7 @@
   }
   figure(
     {
-      content
+      align(left, block(width:100%, content))
       _render-source(source)
     },
     caption: caption,

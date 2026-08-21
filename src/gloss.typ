@@ -1,63 +1,55 @@
-// gloss.typ — Ponte de integração com o glossarium (termos, siglas e símbolos).
+// gloss.typ — inline #abbrev / #gloss com state nativo (inspirado min-article)
+#let _gloss-state = state("ifba-gloss", (:))
+#let _abbrev-state = state("ifba-abbrev", (:))
 
-#import "@preview/glossarium:0.5.10": (
-  make-glossary,
-  register-glossary,
-  print-glossary,
-)
-
-// Deve ser aplicado como show-rule no template (obrigatório antes de usar @key).
-#let setup-glossary() = {
-  show: make-glossary
+#let abbrev(key, long: none, body) = context {
+  let abbrev-key = if type(key) == str { key } else { str(key) }
+  let cur = _abbrev-state.get()
+  if abbrev-key in cur {
+    upper(abbrev-key)
+  } else {
+    if long == none { panic("abbrev: long required on first use for '" + abbrev-key + "'") }
+    let entry = (long: long, definition: body)
+    _abbrev-state.update(s => { s.insert(abbrev-key, entry); s })
+    [#long (#upper(abbrev-key))]
+  }
 }
 
-// Registra as entradas (termos/siglas/símbolos) vindas de glossary.typ.
-#let register(entries) = {
-  register-glossary(entries)
+#let gloss(term, body) = context {
+  let t = if type(term) == str { term } else { str(term) }
+  let cur = _gloss-state.get()
+  if t not in cur {
+    _gloss-state.update(s => { s.insert(t, body); s })
+  }
+  [#t]
 }
 
-// Cabeçalho das listas do glossarium.
 #let _cabecalho(titulo) = {
   pagebreak(weak: true)
   align(center, text(size: 14pt, weight: "bold")[#upper(titulo)])
   v(1em)
 }
 
-// Glossário pós-textual (apenas termos sem grupo).
-#let glossario(entries, title: "Glossário") = {
-  _cabecalho(title)
-  set par(first-line-indent: 0pt)
-  print-glossary(
-    entries,
-    groups: ("",),
-    disable-back-references: true,
-    user-print-group-heading: (g, level: none) => [],
-    user-print-back-references: (e, ..args) => [],
-  )
+#let lista-abreviaturas(title: "Lista de abreviaturas e siglas") = context {
+  let data = _abbrev-state.final()
+  if data.len() > 0 {
+    _cabecalho(title)
+    set par(first-line-indent: 0pt)
+    for k in data.keys().sorted() {
+      let v = data.at(k)
+      block(grid(columns: (3.5em, 1fr), column-gutter: 1cm, [#upper(k)], v.long))
+    }
+  }
 }
 
-// Lista de abreviaturas/siglas (pré-textual) filtrada por grupo.
-#let lista-abreviaturas(entries, title: "Lista de abreviaturas e siglas") = {
-  _cabecalho(title)
-  set par(first-line-indent: 0pt)
-  print-glossary(
-    entries,
-    groups: ("abbreviation",),
-    disable-back-references: true,
-    user-print-group-heading: (g, level: none) => [],
-    user-print-back-references: (e, ..args) => [],
-  )
-}
-
-// Lista de símbolos filtrada por grupo.
-#let lista-simbolos(entries, title: "Lista de símbolos") = {
-  _cabecalho(title)
-  set par(first-line-indent: 0pt)
-  print-glossary(
-    entries,
-    groups: ("symbol",),
-    disable-back-references: true,
-    user-print-group-heading: (g, level: none) => [],
-    user-print-back-references: (e, ..args) => [],
-  )
+#let glossario(title: "Glossário") = context {
+  let data = _gloss-state.final()
+  if data.len() > 0 {
+    heading(level:1, numbering:none, outlined:true, bookmarked:true, upper(title))
+    set par(first-line-indent: 0pt)
+    for k in data.keys().sorted() {
+      let v = data.at(k)
+      block(terms.item(k, v))
+    }
+  }
 }
