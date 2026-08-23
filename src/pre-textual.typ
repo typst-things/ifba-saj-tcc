@@ -1,13 +1,11 @@
 // pre-textual.typ — classic-ppgsi order, ABNT header, capa/folha correct
-#import "layout.typ": apply-layout, default-theme
+#import "layout.typ": default-theme, _abnt-page, _abnt-body, _abnt-headings, _backmatter, _cm-dash, _fim-de-folha
 #import "config.typ": get-config, set-config
 #import "gloss.typ": glossario, lista-abreviaturas
 #import "bibliography.typ": cite, references, register-bib
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
-#let _cm-dash = " – "
 #let _blue = rgb(0, 0, 0)
-#let _backmatter = state("ifba-backmatter", none)
 #let _pre-titulo(nome) = heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper(nome))
 #let _logo() = {
   rect(width: 2.7cm, height: 2.7cm, stroke: (paint: luma(45%), thickness: 1pt, dash: "dashed"), radius: 4pt, align(
@@ -71,24 +69,6 @@
     if type(ficha) == str { image(ficha, width: 100%, height: 100%, fit: "contain") } else { ficha }
   })
 }
-#let _chapter-mark(loc) = {
-  let chaps = query(heading.where(level: 1)).filter(h => (
-    h.location().page() <= loc.page() and (h.numbering != none or h.outlined == true)
-  ))
-  if chaps.len() == 0 { return none }
-  let h = chaps.last()
-  let modo = _backmatter.at(h.location())
-  if modo != none {
-    let letra = numbering("A", counter(heading).at(h.location()).first())
-    [#if modo == "appendix" { "Apêndice" } else { "Anexo" } #letra#_cm-dash#h.body]
-  } else if h.numbering != none {
-    let num = numbering("1", ..counter(heading).at(h.location()))
-    [Capítulo #num. #h.body]
-  } else { h.body }
-}
-#let _blank-if-even() = context {
-  if state("ifba-saj-config", (print: false)).get().at("print", default: false) { pagebreak(to: "odd") }
-}
 #let template(
   titulo: none,
   autor: none,
@@ -138,82 +118,10 @@
   let _preamb = if descricao == none {
     [Trabalho de Conclusão de Curso apresentado ao curso de #text(style: "italic")[Análise e Desenvolvimento de Sistemas] do Instituto Federal da Bahia, campus Santo Antônio de Jesus.]
   } else { descricao }
-  // global styles
-  set page(paper: "a4", margin: (left: 3cm, right: 2cm, top: 3cm, bottom: 2cm), header-ascent: 1cm, header: context {
-    let loc = here()
-    let pg = loc.page()
-    let mark = _chapter-mark(loc)
-    if mark == none { return }
-    set text(size: 10pt)
-    let chap-here = query(heading.where(level: 1)).filter(h => h.location().page() == pg)
-    if chap-here.len() > 0 {
-      align(right, counter(page).display())
-      return
-    }
-    grid(
-      columns: (1fr, auto),
-      align: (left + bottom, right + bottom),
-      mark, counter(page).display(),
-    )
-    v(-0.4em)
-    line(length: 100%, stroke: 0.4pt)
-  })
-  set text(font: "New Computer Modern", size: 12pt, lang: "pt", region: "br", hyphenate: true)
-  set par(leading: 1.1em, spacing: 1.1em, first-line-indent: (amount: 1.25cm, all: true), justify: true)
-  set heading(numbering: (..nums) => if nums.pos().len() <= 3 { numbering("1.1.1", ..nums.pos()) })
-  set math.equation(numbering: "(1)")
-  set figure(gap: 0.6em)
-  set figure.caption(separator: _cm-dash, position: top)
-  show figure.caption: it => {
-    let _kinds = ("image", "frame", "code", "algorithm")
-    let ok = if type(it.kind) == str { it.kind in _kinds } else { it.kind == table }
-    if not ok { return it }
-    set text(size: 12pt)
-    set par(leading: 0.6em, first-line-indent: 0pt, spacing: 0.6em)
-    layout(size => context {
-      let number = it.counter.display(it.numbering)
-      let is-alg = it.kind == "algorithm"
-      let label = if is-alg { strong[#it.supplement #number] } else { [#it.supplement #number#_cm-dash] }
-      let full = label + it.body
-      if measure(full).width <= size.width { align(center, full) } else {
-        set par(hanging-indent: measure(label).width, justify: true)
-        full
-      }
-    })
-  }
-  show heading.where(level: 1): it => context {
-    if state("ifba-saj-config", (print: false)).get().at("print", default: false) { pagebreak(to: "odd") } else {
-      pagebreak(weak: true)
-    }
-    set text(size: 12pt, weight: "bold")
-    set par(first-line-indent: 0pt, justify: false, leading: 0.93em)
-    let modo = _backmatter.at(it.location())
-    block(above: 0pt, below: 22pt, width: 100%, {
-      if modo != none {
-        let letra = numbering("A", counter(heading).at(it.location()).first())
-        align(center, [#if modo == "appendix" { "Apêndice" } else { "Anexo" } #letra#_cm-dash#it.body])
-      } else if it.numbering == none { align(center, it.body) } else { it }
-    })
-  }
-  show heading.where(level: 2): it => context {
-    set text(size: 12pt, weight: "regular", style: "italic")
-    set par(first-line-indent: 0pt, justify: false, leading: 0.93em)
-    let modo = _backmatter.at(it.location())
-    if modo != none {
-      let n = numbering("1", counter(heading).at(it.location()).at(1))
-      block(above: 32pt, below: 22pt, [#n #it.body])
-    } else { block(above: 32pt, below: 22pt, it) }
-  }
-  show heading.where(level: 3): it => context {
-    set text(size: 12pt, weight: "regular", style: "normal")
-    set par(first-line-indent: 0pt, justify: false, leading: 0.93em)
-    let modo = _backmatter.at(it.location())
-    if modo != none {
-      let nums = counter(heading).at(it.location())
-      let n = numbering("1.1", nums.at(1), nums.at(2))
-      block(above: 32pt, below: 22pt, [#n #it.body])
-    } else { block(above: 32pt, below: 22pt, it) }
-  }
+  // global styles (ponto único de estilo: layout.typ)
+  show: _abnt-page.with(print: print)
+  show: _abnt-body
+  show: _abnt-headings
   if codly-habilitado {
     show: codly-init.with()
     codly(languages: codly-languages)
@@ -235,16 +143,19 @@
   }
   // PRE-TEXTUAIS em ordem classic-ppgsi
   _capa(_logo-val, instituicao, _author-upper, titulo, local, ano)
-  counter(page).update(0)
-  pagebreak()
+  _fim-de-folha()
+  // A contagem recomeça após a capa: a folha de rosto é a folha 1.
+  counter(page).update(1)
   _folha-de-rosto(_author-upper, titulo, _preamb, orientador, co-orientador, local, ano)
-  pagebreak()
-  _ficha(catalog-card)
-  _blank-if-even()
+  if catalog-card != none {
+    // Ficha catalográfica no verso da folha de rosto (NBR 14724).
+    pagebreak()
+    _ficha(catalog-card)
+  }
   if errata != none {
     heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper("Errata"))
     errata
-    pagebreak()
+    _fim-de-folha()
   }
   if approval-text != none {
     heading(level: 1, numbering: none, outlined: false, bookmarked: true, hide[ Folha de aprovação])
@@ -264,23 +175,23 @@
         }
       })
     }
-    pagebreak()
+    _fim-de-folha()
   }
   if dedication != none {
     v(1fr)
     align(center, emph(dedication))
     v(1fr)
-    pagebreak()
+    _fim-de-folha()
   }
   if acknowledgments != none {
     _pre-titulo[AGRADECIMENTOS]
     acknowledgments
-    pagebreak()
+    _fim-de-folha()
   }
   if epigraph != none {
     v(1fr)
     align(right, emph(epigraph))
-    pagebreak()
+    _fim-de-folha()
   }
   if resumo-conteudo != none {
     _pre-titulo[RESUMO]
@@ -292,7 +203,7 @@
         [Palavras-chave: #(resumo-palavras.join(". ")).]
       }
     })
-    pagebreak()
+    _fim-de-folha()
   }
   if abstract-conteudo != none {
     _pre-titulo[ABSTRACT]
@@ -305,7 +216,7 @@
         [Keywords: #(abstract-palavras.join(". ")).]
       }
     })
-    pagebreak()
+    _fim-de-folha()
   }
   let _lista(nome, target) = {
     _pre-titulo(nome)
@@ -321,7 +232,7 @@
       ))
     }
     outline(title: none, target: target)
-    _blank-if-even()
+    _fim-de-folha()
   }
   if incluir-lista-figuras { _lista([Lista de figuras], figure.where(kind: image)) }
   if incluir-lista-algoritmos { _lista([Lista de algoritmos], figure.where(kind: "algorithm")) }
@@ -355,7 +266,7 @@
       link(it.element.location(), text(fill: _blue, it.indented(it.prefix(), it.inner())))
     }
     outline(title: none, depth: 3, indent: 1.2em)
-    _blank-if-even()
+    _fim-de-folha()
   }
   body
 }

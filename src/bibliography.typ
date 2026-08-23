@@ -406,7 +406,6 @@
 }
 
 #let references(title: "REFERÊNCIAS") = {
-  pagebreak(weak: true)
   heading(level: 1, numbering: none, outlined: true)[#upper(title)]
   context {
     let entries = _entries()
