@@ -1,11 +1,10 @@
 // pre-textual.typ — classic-ppgsi order, ABNT header, capa/folha correct
-#import "layout.typ": default-theme, _abnt-page, _abnt-body, _abnt-headings, _backmatter, _cm-dash, _fim-de-folha
+#import "layout.typ": default-theme, _abnt-page, _abnt-body, _abnt-headings, _backmatter, _cm-dash, _fim-de-folha, _text-color
 #import "config.typ": get-config, set-config
 #import "gloss.typ": glossario, lista-abreviaturas
 #import "bibliography.typ": cite, references, register-bib
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
-#let _blue = rgb(0, 0, 0)
 #let _pre-titulo(nome) = heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper(nome))
 #let _logo() = {
   rect(width: 2.7cm, height: 2.7cm, stroke: (paint: luma(45%), thickness: 1pt, dash: "dashed"), radius: 4pt, align(
@@ -101,7 +100,7 @@
   codly-habilitado: false,
   bibliografia: none,
   referencias-titulo: "REFERÊNCIAS",
-  cor-links: _blue,
+  cor-links: _text-color,
   body,
 ) = {
   set-config(
@@ -224,11 +223,11 @@
       let dest = it.element.location()
       let tail = if it.fill != none { box(width: 1fr, it.fill) } else { h(1fr) }
       link(dest, it.indented(
-        text(fill: _blue, {
+        text(fill: _text-color, {
           it.prefix()
           _cm-dash
         }),
-        text(fill: _blue, it.body()) + [ ] + tail + [ ] + it.page(),
+        text(fill: _text-color, it.body()) + [ ] + tail + [ ] + it.page(),
       ))
     }
     outline(title: none, target: target)
@@ -249,21 +248,21 @@
       let modo = _backmatter.at(dest)
       if modo != none {
         let letra = numbering("A", counter(heading).at(dest).first())
-        link(dest, text(fill: _blue, weight: "bold", it.indented(
+        link(dest, text(fill: _text-color, weight: "bold", it.indented(
           [#if modo == "appendix" { "Apêndice" } else { "Anexo" } #letra#_cm-dash],
           it.inner(),
         )))
       } else {
         let e = it.indented(it.prefix(), it.inner())
         let body = if it.element.body == [Referências] { upper(e) } else { e }
-        link(dest, text(fill: _blue, weight: "bold", body))
+        link(dest, text(fill: _text-color, weight: "bold", body))
       }
     })
     show outline.entry.where(level: 2): it => context if _backmatter.at(it.element.location()) != none { none } else {
-      link(it.element.location(), text(fill: _blue, style: "italic", it.indented(it.prefix(), it.inner())))
+      link(it.element.location(), text(fill: _text-color, style: "italic", it.indented(it.prefix(), it.inner())))
     }
     show outline.entry.where(level: 3): it => context if _backmatter.at(it.element.location()) != none { none } else {
-      link(it.element.location(), text(fill: _blue, it.indented(it.prefix(), it.inner())))
+      link(it.element.location(), text(fill: _text-color, it.indented(it.prefix(), it.inner())))
     }
     outline(title: none, depth: 3, indent: 1.2em)
     _fim-de-folha()

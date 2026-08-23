@@ -13,6 +13,9 @@
   margin-outside: 2cm,
 )
 
+// Cores internas (não customizáveis pelo tema).
+#let _text-color = rgb(0, 0, 0)
+
 // Tema público: apenas o que a ABNT é neutra.
 #let default-theme = (
   serif: "New Computer Modern",

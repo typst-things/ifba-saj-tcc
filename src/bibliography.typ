@@ -3,8 +3,9 @@
 // Adaptado de classic-ppgsi para ifba-saj-tcc.
 // ============================================================================
 
+#import "layout.typ": _text-color
+
 #let _CM = <ifba-cite-mark>
-#let _blue = rgb(0,0,0)
 
 // ---------------------------------------------------------------------------
 // PARSER BibTeX (subconjunto: @tipo{chave, campo = {valor} | "valor" | token})
@@ -232,7 +233,7 @@
     let parts = ks.map(k => {
       let ks_ = str(k)
       let e = entries.at(ks_, default: (type: "misc", fields: (author: ks_, year: "")))
-      let base = text(fill: _blue)[#_cite-authors(e.fields.at("author", default: ks_), caixa: "upper"), #(_year(e) + smap.at(ks_, default: ""))]
+      let base = text(fill: _text-color)[#_cite-authors(e.fields.at("author", default: ks_), caixa: "upper"), #(_year(e) + smap.at(ks_, default: ""))]
       if supplement != none and ks.len()==1 { [#base, #supplement] } else { base }
     })
     if supplement != none and ks.len()>1 { [(#parts.join[; ]; supplement)] } else { [(#parts.join[; ])] }
@@ -247,7 +248,7 @@
     let smap = _suffixes(_cite-order(query(_CM)), entries)
     let e = entries.at(key, default: (type: "misc", fields: (author: key, year: "")))
     let supp = if supplement != none { [, #supplement] } else { [] }
-    text(fill: _blue)[#_cite-authors(e.fields.at("author", default: key), caixa: "title", narrativo: true) (#(_year(e) + smap.at(key, default: ""))#supp)]
+    text(fill: _text-color)[#_cite-authors(e.fields.at("author", default: key), caixa: "title", narrativo: true) (#(_year(e) + smap.at(key, default: ""))#supp)]
   }
 }
 
@@ -387,7 +388,7 @@
   }
   let pages = seen.pairs().map(((k, v)) => (p: int(k), loc: v)).sorted(key: x => x.p)
   let n = pages.len()
-  let plink(x) = link(x.loc, text(fill: _blue, str(x.p)))
+  let plink(x) = link(x.loc, text(fill: _text-color, str(x.p)))
   if n == 0 { [Nenhuma citação no texto.] }
   else if n == 1 { [Citado na página #plink(pages.at(0)).] }
   else {
