@@ -7,11 +7,11 @@
 #import "src/elements.typ": figura, quadro, tabela, fonte, myself
 #import "src/bibliography.typ": cite, prose, references, register-bib, citacao-curta, citacao-longa
 #import "src/code-algo.typ": codigo, algoritmo-passos, figura-algoritmo
-#import "src/charts.typ": pie-chart, bar-chart
-#import "src/diagrams.typ": diagram, fluxograma
+#import "src/diagrams.typ": diagram
 #import "src/gloss.typ": abbrev, gloss, lista-abreviaturas, glossario
 #import "src/annexes.typ": apendice, anexo
-#import "src/editor-tools.typ": todo, nota-revision, rascunho, equacao, nota-de-rodape
+#import "src/editor-tools.typ": equacao, figura-equacao
+#import "src/config.typ": get-autor, get-titulo, get-ano, get-orientador, get-curso, get-cidade, get-config
 
 // Reexportações públicas.
 #let theme = default-theme

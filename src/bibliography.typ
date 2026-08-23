@@ -4,7 +4,7 @@
 // ============================================================================
 
 #let _CM = <ifba-cite-mark>
-#let _blue = rgb(0, 0, 238)
+#let _blue = rgb(0,0,0)
 
 // ---------------------------------------------------------------------------
 // PARSER BibTeX (subconjunto: @tipo{chave, campo = {valor} | "valor" | token})
@@ -185,9 +185,10 @@
 #let _suffixes(order, entries) = {
   let groups = (:)
   for k in order {
-    if k in entries {
-      let ay = _ay-key(entries.at(k))
-      groups.insert(ay, groups.at(ay, default: ()) + (k,))
+    let ks = str(k)
+    if ks in entries {
+      let ay = _ay-key(entries.at(ks))
+      groups.insert(ay, groups.at(ay, default: ()) + (ks,))
     }
   }
   let smap = (:)
@@ -206,35 +207,47 @@
 #let _bibsrc = state("ifba-bibsrc", "")
 #let register-bib(content) = _bibsrc.update(content)
 #let _entries() = _parse-bib(_bibsrc.get())
-#let _mark(k) = [#metadata(k)<ifba-cite-mark>]
+#let _mark(k) = [#metadata(str(k))<ifba-cite-mark>]
+#let alias-ref = {
+  show ref: it => {
+    let k = str(it.target)
+    context {
+      let entries = _entries()
+      if k in entries { cite(k) } else { it }
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // CITAÇÕES PÚBLICAS
 // ---------------------------------------------------------------------------
 
 // Citação parentética: (SILVA, 2020) ou (SILVA, 2020a; SOUZA, 2021)
-#let cite(..keys) = {
+#let cite(..keys, supplement: none) = {
   let ks = keys.pos()
   ks.map(_mark).join()
   context {
     let entries = _entries()
     let smap = _suffixes(_cite-order(query(_CM)), entries)
     let parts = ks.map(k => {
-      let e = entries.at(k, default: (type: "misc", fields: (author: k, year: "")))
-      text(fill: _blue)[#_cite-authors(e.fields.at("author", default: k), caixa: "upper"), #(_year(e) + smap.at(k, default: ""))]
+      let ks_ = str(k)
+      let e = entries.at(ks_, default: (type: "misc", fields: (author: ks_, year: "")))
+      let base = text(fill: _blue)[#_cite-authors(e.fields.at("author", default: ks_), caixa: "upper"), #(_year(e) + smap.at(ks_, default: ""))]
+      if supplement != none and ks.len()==1 { [#base, #supplement] } else { base }
     })
-    [(#parts.join[; ])]
+    if supplement != none and ks.len()>1 { [(#parts.join[; ]; supplement)] } else { [(#parts.join[; ])] }
   }
 }
 
 // Citação narrativa: Silva (2020)
-#let prose(key) = {
+#let prose(key, supplement: none) = {
   _mark(key)
   context {
     let entries = _entries()
     let smap = _suffixes(_cite-order(query(_CM)), entries)
     let e = entries.at(key, default: (type: "misc", fields: (author: key, year: "")))
-    text(fill: _blue)[#_cite-authors(e.fields.at("author", default: key), caixa: "title", narrativo: true) (#(_year(e) + smap.at(key, default: "")))]
+    let supp = if supplement != none { [, #supplement] } else { [] }
+    text(fill: _blue)[#_cite-authors(e.fields.at("author", default: key), caixa: "title", narrativo: true) (#(_year(e) + smap.at(key, default: ""))#supp)]
   }
 }
 
@@ -368,7 +381,7 @@
 
 #let _backref(markers, key) = {
   let seen = (:)
-  for m in markers.filter(m => m.value == key) {
+  for m in markers.filter(m => str(m.value) == str(key)) {
     let p = counter(page).at(m.location()).first()
     if str(p) not in seen { seen.insert(str(p), m.location()) }
   }
@@ -400,16 +413,16 @@
     let markers = query(_CM)
     let order = _cite-order(markers)
     let idx = (:)
-    for (n, k) in order.enumerate() { idx.insert(k, n) }
-    let cited = order.filter(k => k in entries)
+    for (n, k) in order.enumerate() { idx.insert(str(k), n) }
+    let cited = order.filter(k => str(k) in entries)
     let sorted = cited.sorted(key: k => {
-      let e = entries.at(k)
+      let e = entries.at(str(k))
       let sa = upper(_authors-bib(_g(e.fields, "author")))
-      sa + "\u{1}" + _year(e) + "\u{1}" + lower(_g(e.fields, "title")) + "\u{1}" + _padnum(idx.at(k))
+      sa + "\u{1}" + _year(e) + "\u{1}" + lower(_g(e.fields, "title")) + "\u{1}" + _padnum(idx.at(str(k)))
     })
     set par(leading: 0.65em, spacing: 1.3em, first-line-indent: 0pt, justify: true)
     for k in sorted {
-      block(_render-entry(entries.at(k)) + " " + _backref(markers, k))
+      block(_render-entry(entries.at(str(k))) + " " + _backref(markers, str(k)))
     }
   }
 }

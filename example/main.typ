@@ -2,6 +2,7 @@
 #import "../lib.typ": *
 #import "assets/diagramas/arquitetura.typ": arquitetura
 #import "assets/graficos/pizza.typ": pizza
+#import "assets/graficos/barras.typ":  barras
 #import "assets/algoritmos/busca.typ": busca-linear
 #show: template.with(
   titulo: "Desenvolvimento de um Sistema de TCC Autogerado para o IFBA SAJ",
@@ -16,16 +17,26 @@
   dedication: [Dedico à comunidade de software livre de SAJ.],
   acknowledgments: [Agradeço aos professores do IFBA.],
   epigraph: [A simplicidade é a sofisticação máxima. \ — Leonardo da Vinci],
-  catalog-card: none,
-  errata: none,
-  approval-text: none,
-  committee: (),
+  //catalog-card: [#v(1fr) Ficha catalog-card #v(1fr) ], // "assets/ficha.pdf" ou image("assets/ficha.pdf", width:100%, height:100%, fit:"contain")
+  catalog-card: image("assets/ficha-exemplo.pdf", width:100%, height:100%, fit:"contain"),
+  errata: [Elemento opcional para versão corrigida, depois de depositada.],
+  approval-text: [
+    Trabalho de Conclusão de Curso de autoria de #get-autor() , sob o título *#get-titulo()*, apresentada à Escola de Artes, Ciências e Humanidades da Universidade de São Paulo, para obtenção do título de Mestre em Ciências pelo Programa de Pós-graduação em Sistemas de Informação, na área de concentração Metodologia e Técnicas da Computação, aprovada em #h(0.3em)#box(width: 0.85cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) de #h(0.3em)#box(width: 3.5cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) de #h(0.3em)#box(width: 1.25cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) pela comissão julgadora constituída pelos doutores:
+  ],
+  committee: (
+    [Prof. Dr. \ Instituição \ Presidente],
+    [Prof. Dr. \ Instituição],
+    [Prof. Dr. \ Instituição],
+    [Prof. Dr. \ Instituição],
+    [Prof. Dr. \ Instituição],
+  ),
   codly-habilitado: true,
   bibliografia: read("referencias.bib"),
   incluir-lista-codigos: true,
   incluir-lista-algoritmos: true,
   incluir-lista-quadros: true,
-  draft: true,
+  incluir-lista-equacoes: true,
+  print: true,
 )
 = Introdução
 
@@ -66,55 +77,94 @@ Ver @figura-logo e @figura-arquitetura.
 
 #lorem(60)
 
-== Citações
+== Citações — Exemplos Nativos ABNT (NBR 10520:2023)
 
-#lorem(60)
+#lorem(30)
 
-A @figura-codigo mostra código real.
+=== Indireta parentética (ao final da frase)
 
-#lorem(60)
+A arquitetura de microsserviços é amplamente adotada na indústria #cite("newman2021").
+Várias fontes confirmam essa tendência #cite("martin2008", "sommerville2011").
 
-#codigo(lang: "javascript", caption: [Servidor Express], read("assets/codigos/server.js")) <figura-codigo>
+=== Indireta narrativa (autor no fluxo do texto)
 
-#lorem(60)
+Como afirma #prose("martin2008"), o código limpo é essencial.
+Segundo #prose("sommerville2011"), a engenharia de software é disciplina madura.
 
-#figura-algoritmo(algoritmo-passos(..busca-linear), caption: [Busca linear]) <algoritmo-busca>
+=== Com localizador (página)
 
-#lorem(60)
+A modularização é defendida #cite("martin2008", supplement: [p. 42]).
+Na forma narrativa com página: #cite("sommerville2011", supplement: [p. 18]) destaca a importância.
 
-O algoritmo é o @algoritmo-busca.
+=== Múltiplas fontes
 
-#lorem(60)
+Estudos recentes apontam convergência #cite("martin2008", "sommerville2011", "newman2021").
 
-#figura(pizza, caption: [Distribuição linguagens]) <figura-grafico>
+=== Só autor / só ano (via prose + referência)
 
-#lorem(60)
+O autor citado é #prose("newman2021"). // nativo equivalente a form:author/year seria custom
 
-Segundo autor, #citacao-curta[código limpo é legível].
+=== Direta curta (até 3 linhas, aspas + citação)
 
-#lorem(60)
+Segundo o autor, #citacao-curta[código limpo é legível e simples] #cite("martin2008", supplement: [p. 42]).
+
+=== Direta longa (>3 linhas, recuo 4cm, 10pt)
 
 #citacao-longa(
   autor: "Martin",
   ano: "2009",
   pagina: "42",
-)[O código é limpo se for legível e simples. Ele não deve conter duplicações.]
+)[O código é limpo se for legível e simples. Ele não deve conter duplicações. Deve expressar claramente suas intenções e conter o mínimo de dependências possíveis para facilitar a manutenção e evolução do sistema ao longo do tempo.]
+
 A arquitetura é relevante #cite("newman2021").
-Texto com nota#nota-de-rodape[Nota explicativa.].
-#todo[Revisar latência.]
+
+=== Código e Algoritmo (para referência cruzada)
+
+A @figura-codigo mostra código real.
+
+#codigo(lang: "javascript", caption: [Servidor Express], read("assets/codigos/server.js")) <figura-codigo>
+
+O algoritmo é o @algoritmo-busca.
+
+#figura-algoritmo(algoritmo-passos(..busca-linear), caption: [Busca linear]) <algoritmo-busca>
+
+
+#figura(pizza, caption: [Distribuição linguagens]) <figura-grafico>
+
+Texto com nota#footnote[Nota explicativa.].
+
+#figura(barras, caption: [Distribuição linguagens em barras]) <figura-barras>
+
+
+
 #equacao[$ e^(i pi) + 1 = 0 $] <eq-euler>
+
 Ver @figura-arquitetura e @eq-euler.
+
 #references()
+
 #glossario()
+
 #apendice
+
 = Roteiro de Entrevistas
+
 Conteúdo do apêndice A.
+
 == Seção interna apêndice
+
 Texto.
+
 = Novo Apendice
+
 #lorem(30)
+
 #anexo
+
 = Portaria de Autorização
+
 Conteúdo do anexo A.
+
 = Novo anexo
+
 #lorem(30)

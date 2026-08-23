@@ -13,5 +13,6 @@
     ),
     value-key: "value",
     label-key: "label",
+    radius: 2
   )
 })
