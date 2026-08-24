@@ -1,8 +1,4 @@
-﻿## Purpose
-
-Exibição de código-fonte e algoritmos estruturados (src/code-algo.typ).
-
-## Requirements
+﻿## MODIFIED Requirements
 
 ### Requirement: Código-fonte
 `codigo` SHALL renderizar código como raw (com `lang` opcional para realce), alinhado à esquerda, em figure com `kind` e `supplement` parametrizáveis (padrão `kind: raw`, `supplement: "Código"`), legenda no topo e linha de fonte abaixo (padrão: elaborado pelo próprio autor). Quando `keywords` for informado, as ocorrências exatas das palavras-chave SHALL ser destacadas em negrito dentro do bloco.
@@ -26,9 +22,8 @@ Exibição de código-fonte e algoritmos estruturados (src/code-algo.typ).
 - **WHEN** `codigo` ou `algoritmo` é renderizado com caption
 - **THEN** a legenda segue o mesmo formato "Supplement Número – Título" centralizado
 
-### Requirement: Realce via codly
-O template SHALL inicializar codly + codly-languages uma única vez quando `codly-habilitado: true`.
+## REMOVED Requirements
 
-#### Scenario: Codly desabilitado
-- **WHEN** `codly-habilitado: false`
-- **THEN** o código é renderizado como raw simples sem inicialização do codly
+### Requirement: Algoritmo em passos
+**Reason**: Substituído por `algoritmo` wrapper de `codigo` com raw + highlight de keywords; grade manual com linhas horizontais não é mais necessária.
+**Migration**: Usar `algoritmo(caption: [...])[ ... ]` em vez de `figura-algoritmo(algoritmo-passos(...), caption: [...])`.

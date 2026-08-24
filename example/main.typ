@@ -3,7 +3,6 @@
 #import "assets/diagramas/arquitetura.typ": arquitetura
 #import "assets/graficos/pizza.typ": pizza
 #import "assets/graficos/barras.typ": barras
-#import "assets/algoritmos/busca.typ": busca-linear
 #show: template.with(
   titulo: "Desenvolvimento de um Sistema de TCC Autogerado para o IFBA SAJ",
   autor: "Sandro de Souza",
@@ -140,7 +139,7 @@ Estudos recentes apontam convergência #cite("martin2008", "sommerville2011", "n
 
 #lorem(30) O algoritmo é o @algoritmo-busca.
 
-#figura-algoritmo(algoritmo-passos(..busca-linear), caption: [Busca linear]) <algoritmo-busca>
+#algoritmo(read("assets/algoritmos/busca.alg"), caption: [Busca linear]) <algoritmo-busca>
 
 #lorem(30)
 

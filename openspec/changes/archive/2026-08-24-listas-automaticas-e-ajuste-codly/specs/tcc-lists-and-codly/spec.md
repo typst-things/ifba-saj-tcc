@@ -1,8 +1,8 @@
-﻿## Purpose
+## Purpose
 
 Garante que o template gere automaticamente todas as listas pré-textuais exigidas pela ABNT com base nos elementos inseridos no documento, mantendo a ordem normativa correta antes do Sumário, e padronize a exibição de blocos de código com codly (centralizados, alinhados à esquerda, com numeração de linha e espaçamento adequado).
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Automatic Pre-textual Lists
 The template SHALL inspect the document for figures, frames, tables, code blocks, algorithms, equations, and abbreviations, and generate the corresponding pre-textual lists automatically in strict ABNT order before the Table of Contents (Sumário) only when items are present.

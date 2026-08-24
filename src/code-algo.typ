@@ -15,7 +15,7 @@
   } else if src == auto {
     _self()
   } else {
-    [Fonte#(" – ")#src]
+    [Fonte#" – "#src]
   }
 }
 
@@ -33,7 +33,7 @@
   codly(languages: codly-languages)
   codly(display-icon: false)
   codly(display-name: false)
-  
+
   //codly-init já configura show rule para figure.where(kind: raw)
   //apenas ajustamos alinhamento e espaçamento
   show figure.where(kind: raw): set align(center)
@@ -41,6 +41,8 @@
   show raw.where(block: true): set par(leading: 0.55em, first-line-indent: 0pt, justify: false)
   body
 }
+
+
 
 // 💻 Código-fonte — lê arquivo externo via read() e estiliza com codly.
 // Bloco shrink-to-fit (width: auto): init-codly() centra a figura e mantém
@@ -51,61 +53,47 @@
   caption: none,
   source: auto,
   filename: none,
+  kind: raw,
+  keywords: none,
+  supplement: [Código],
   body,
 ) = {
-  let content = if lang == none {
+  let _highlight-keywords(body, keywords) = {
+    // envolve o raw em um show local
+    show regex("\b(" + keywords.join("|") + ")\b"): it => text(fill: black, weight: "bold", it.text)
+    raw(body, lang: lang, block: true)
+  }
+  let content = if keywords != none {
+    _highlight-keywords(body, keywords)
+  } else if lang == none {
     raw(body, block: true)
   } else {
-    if filename != none{
-      codly(header: [#filename])
-    }
     raw(body, lang: lang, block: true)
   }
   figure(
     {
+      if filename != none {
+        codly(header: [#filename])
+      }
       block(width: auto, content)
       _render-source(source)
     },
     caption: caption,
     numbering: "1",
-    kind: raw,
-    supplement: [Código],
+    kind: kind,
+    supplement: supplement,
   )
 }
 
-// ⚙️ Algoritmo — blocos numerados estilo pseudocódigo.
-#let algoritmo-passos(..lines) = {
-  block(width: 100%, breakable: false, {
-    set text(size: 12pt)
-    set par(leading: 0.7em, first-line-indent: 0pt, justify: false)
-    line(length: 100%, stroke: 0.8pt)
-    v(3pt)
-    let ls = lines.pos()
-    grid(
-      columns: (auto, 1fr),
-      column-gutter: 0.8em,
-      row-gutter: 0.35em,
-      align: (right, left),
-      ..ls.enumerate().map(((i, l)) => (text(size: 10pt)[#(i + 1):], l)).flatten(),
-    )
-    v(3pt)
-    line(length: 100%, stroke: 0.8pt)
-  })
-}
 
-#let figura-algoritmo(
+
+#let algoritmo(caption: none, filename: none, source: auto, body) = codigo(
+  lang: "pseudocodigo",
+  caption: caption,
+  source: source,
+  filename: filename,
+  supplement: [Algoritmo], // ou param
+  kind: "algorithm",
+  keywords: ("se", "então", "senão", "para", "cada", "faça", "retorne", "enquanto", "fim", "procedure", "em"),  
   body,
-  caption: none,
-  source: auto,
-) = {
-  figure(
-    {
-      body
-      _render-source(source)
-    },
-    caption: caption,
-    numbering: "1",
-    kind: "algorithm",
-    supplement: [Algoritmo],
-  )
-}
+)

@@ -127,7 +127,7 @@
     layout(size => context {
       let number = it.counter.display(it.numbering)
       let is-alg = it.kind == "algorithm"
-      let label = if is-alg { strong[#it.supplement #number] } else { [#it.supplement #number#_cm-dash] }
+      let label = [#it.supplement #number#_cm-dash] 
       let full = label + it.body
       if measure(full).width <= size.width { align(center, full) } else {
         set par(hanging-indent: measure(label).width, justify: true)

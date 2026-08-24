@@ -6,7 +6,7 @@
 #import "src/pre-textual.typ": template
 #import "src/elements.typ": figura, quadro, tabela, fonte, myself
 #import "src/bibliography.typ": cite, prose, references, register-bib, citacao-curta, citacao-longa
-#import "src/code-algo.typ": codigo, algoritmo-passos, figura-algoritmo
+#import "src/code-algo.typ": codigo, algoritmo
 #import "src/diagrams.typ": diagram
 #import "src/gloss.typ": abbrev, gloss, lista-abreviaturas, glossario
 #import "src/annexes.typ": apendice, anexo
