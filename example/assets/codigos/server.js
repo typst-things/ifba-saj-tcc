@@ -1,5 +1,3 @@
-// assets/codigos/server.js — Código-fonte real (lido com read()).
-
 import express from 'express';
 const app = express();
 app.use(express.json());

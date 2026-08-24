@@ -3,8 +3,8 @@
 #import "config.typ": get-config, set-config
 #import "gloss.typ": glossario, lista-abreviaturas
 #import "bibliography.typ": cite, references, register-bib
-#import "@preview/codly:1.3.0": *
-#import "@preview/codly-languages:0.1.1": *
+#import "code-algo.typ": init-codly
+#import "@preview/codly-languages:0.1.1": codly-languages
 #let _pre-titulo(nome) = heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper(nome))
 #let _logo() = {
   rect(width: 2.7cm, height: 2.7cm, stroke: (paint: luma(45%), thickness: 1pt, dash: "dashed"), radius: 4pt, align(
@@ -90,12 +90,6 @@
   resumo-palavras: (),
   abstract-conteudo: none,
   abstract-palavras: (),
-  incluir-lista-figuras: true,
-  incluir-lista-tabelas: true,
-  incluir-lista-quadros: false,
-  incluir-lista-codigos: false,
-  incluir-lista-algoritmos: false,
-  incluir-lista-equacoes: false,
   print: false,
   codly-habilitado: false,
   bibliografia: none,
@@ -121,10 +115,7 @@
   show: _abnt-page.with(print: print)
   show: _abnt-body
   show: _abnt-headings
-  if codly-habilitado {
-    show: codly-init.with()
-    codly(languages: codly-languages)
-  }
+  show: init-codly.with(enabled: codly-habilitado)
   show heading: set block(above: 1.5em, below: 1.5em)
   if bibliografia != none { register-bib(bibliografia) }
   // alias @key → #cite("key") para motor custom (mantém @ nativo)
@@ -217,30 +208,37 @@
     })
     _fim-de-folha()
   }
-  let _lista(nome, target) = {
-    _pre-titulo(nome)
-    show outline.entry: it => {
-      let dest = it.element.location()
-      let tail = if it.fill != none { box(width: 1fr, it.fill) } else { h(1fr) }
-      link(dest, it.indented(
-        text(fill: _text-color, {
-          it.prefix()
-          _cm-dash
-        }),
-        text(fill: _text-color, it.body()) + [ ] + tail + [ ] + it.page(),
-      ))
+  // Lista pré-textual: renderiza título + outline apenas se houver itens.
+  // query() em context enxerga o documento inteiro (forward reference nativa),
+  // dispensando qualquer mecanismo de estado manual.
+  let _lista(nome, target) = context {
+    if query(target).len() > 0 {
+      _pre-titulo(nome)
+      show outline.entry: it => {
+        let dest = it.element.location()
+        let tail = if it.fill != none { box(width: 1fr, it.fill) } else { h(1fr) }
+        link(dest, it.indented(
+          text(fill: _text-color, {
+            it.prefix()
+            _cm-dash
+          }),
+          text(fill: _text-color, it.body()) + [ ] + tail + [ ] + it.page(),
+        ))
+      }
+      outline(title: none, target: target)
+      _fim-de-folha()
     }
-    outline(title: none, target: target)
-    _fim-de-folha()
   }
-  if incluir-lista-figuras { _lista([Lista de figuras], figure.where(kind: image)) }
-  if incluir-lista-algoritmos { _lista([Lista de algoritmos], figure.where(kind: "algorithm")) }
-  if incluir-lista-codigos { _lista([Lista de códigos], figure.where(kind: "code")) }
-  if incluir-lista-quadros { _lista([Lista de quadros], figure.where(kind: "frame")) }
-  if incluir-lista-tabelas { _lista([Lista de tabelas], figure.where(kind: table)) }
-  if incluir-lista-equacoes { _lista([Lista de equações], math.equation.where(block: true)) }
-  // glossário abreviaturas via novo state inline
-  // (lista-abreviaturas e glossario expostos para uso manual após body se desejar; inline já é auto)
+  // Listas pré-textuais automáticas na ordem ABNT:
+  // figuras → quadros → tabelas → códigos → algoritmos → equações → abreviaturas → Sumário
+  _lista([Lista de figuras], figure.where(kind: image))
+  _lista([Lista de quadros], figure.where(kind: "frame"))
+  _lista([Lista de tabelas], figure.where(kind: table))
+  _lista([Lista de códigos], figure.where(kind: raw))
+  _lista([Lista de algoritmos], figure.where(kind: "algorithm"))
+  _lista([Lista de equações], math.equation.where(block: true))
+  // lista-abreviaturas guarda internamente com _abbrev-state.final(); não renderiza quando vazia
+  lista-abreviaturas()
   _pre-titulo[SUMÁRIO]
   {
     show outline.entry.where(level: 1): it => context block(above: 1em, below: 0pt, {

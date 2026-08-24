@@ -1,4 +1,5 @@
 // gloss.typ — inline #abbrev / #gloss com state nativo (inspirado min-article)
+#import "layout.typ": _fim-de-folha
 #let _gloss-state = state("ifba-gloss", (:))
 #let _abbrev-state = state("ifba-abbrev", (:))
 
@@ -39,6 +40,7 @@
       let v = data.at(k)
       block(grid(columns: (3.5em, 1fr), column-gutter: 1cm, [#upper(k)], v.long))
     }
+    _fim-de-folha()
   }
 }
 

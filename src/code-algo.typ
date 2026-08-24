@@ -19,32 +19,56 @@
   }
 }
 
-// Inicializa o codly (deve rodar uma única vez via show no template).
-#let init-codly() = {
+// Inicializa o codly como TRANSFORMADOR (recebe body): regras `show:`
+// só propagam quando aplicados diretamente via `show:` no template.
+// A regra genérica do codly (show raw.where(block: true)) NÃO alcança
+// raw dentro de figure — por isso reinjetamos codly() no escopo das
+// figures de código. O container do codly é de largura total (grid
+// width:100% no pacote); legenda e fonte da figura ficam centradas.
+// Estilo: código à esquerda, mono (padrão de raw), numeração de linha
+// ativa (padrão do codly) e entrelinha reduzida para legibilidade.
+#let init-codly(body, enabled: true) = {
+  if not enabled { return body }
   show: codly-init.with()
   codly(languages: codly-languages)
+  codly(display-icon: false)
+  codly(display-name: false)
+  
+  //codly-init já configura show rule para figure.where(kind: raw)
+  //apenas ajustamos alinhamento e espaçamento
+  show figure.where(kind: raw): set align(center)
+  show raw.line: set align(left)
+  show raw.where(block: true): set par(leading: 0.55em, first-line-indent: 0pt, justify: false)
+  body
 }
 
 // 💻 Código-fonte — lê arquivo externo via read() e estiliza com codly.
+// Bloco shrink-to-fit (width: auto): init-codly() centra a figura e mantém
+// as linhas à esquerda dentro do bloco.
+// Usa kind: raw (símbolo) para compatibilidade com codly.
 #let codigo(
   lang: none,
   caption: none,
   source: auto,
+  filename: none,
   body,
 ) = {
   let content = if lang == none {
-    raw(body)
+    raw(body, block: true)
   } else {
-    raw(body, lang: lang)
+    if filename != none{
+      codly(header: [#filename])
+    }
+    raw(body, lang: lang, block: true)
   }
   figure(
     {
-      align(left, block(width:100%, content))
+      block(width: auto, content)
       _render-source(source)
     },
     caption: caption,
     numbering: "1",
-    kind: "code",
+    kind: raw,
     supplement: [Código],
   )
 }
