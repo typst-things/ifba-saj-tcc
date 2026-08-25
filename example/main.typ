@@ -1,4 +1,3 @@
-//#import "@local/ifba-saj-tcc:0.1.0": *
 #import "../lib.typ": *
 #import "assets/diagramas/arquitetura.typ": arquitetura
 #import "assets/graficos/pizza.typ": pizza
@@ -7,31 +6,26 @@
   titulo: "Desenvolvimento de um Sistema de TCC Autogerado para o IFBA SAJ",
   autor: "Sandro de Souza",
   orientador: "Prof. Dr. Orientador do IFBA",
-  ano: "2026",
-  descricao: [Trabalho de Conclusão de Curso apresentado ao curso de Análise e Desenvolvimento de Sistemas do Instituto Federal da Bahia, campus Santo Antônio de Jesus.],
+  data-banca: datetime(year: 2026, month: 8, day: 04),
   resumo-conteudo: [Este trabalho apresenta exemplo completo do pacote ifba-saj-tcc com todas as funcionalidades ABNT.],
   resumo-palavras: ("Typst", "TCC", "ABNT", "IFBA"),
   abstract-conteudo: [This work presents a complete example of the ifba-saj-tcc package.],
   abstract-palavras: ("Typst", "Thesis", "ABNT", "IFBA"),
-  dedication: [Dedico à comunidade de software livre de SAJ.],
-  acknowledgments: [Agradeço aos professores do IFBA.],
-  epigraph: [A simplicidade é a sofisticação máxima. \ — Leonardo da Vinci],
-  //catalog-card: [#v(1fr) Ficha catalog-card #v(1fr) ], // "assets/ficha.pdf" ou image("assets/ficha.pdf", width:100%, height:100%, fit:"contain")
-  catalog-card: image("assets/ficha-exemplo.pdf", width: 100%, height: 100%, fit: "contain"),
+  dedicatoria: [Dedico à comunidade de software livre de SAJ.],
+  agradecimentos: [Agradeço aos professores do IFBA.],
+  epigrafe: [A simplicidade é a sofisticação máxima. \ — Leonardo da Vinci],
+  ficha-catalografica: image("assets/ficha-exemplo.pdf", width: 100%, height: 100%, fit: "contain"),
   errata: [Elemento opcional para versão corrigida, depois de depositada.],
-  approval-text: [
-    Trabalho de Conclusão de Curso de autoria de #get-autor() , sob o título *#get-titulo()*, apresentada à Escola de Artes, Ciências e Humanidades da Universidade de São Paulo, para obtenção do título de Mestre em Ciências pelo Programa de Pós-graduação em Sistemas de Informação, na área de concentração Metodologia e Técnicas da Computação, aprovada em #h(0.3em)#box(width: 0.85cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) de #h(0.3em)#box(width: 3.5cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) de #h(0.3em)#box(width: 1.25cm, line(length: 100%, stroke: 0.5pt))#h(0.3em) pela comissão julgadora constituída pelos doutores:
-  ],
-  committee: (
+  // texto-aprovacao: none → auto-gerado (let _texto-aprovacao-pad); ou forneça content/str custom
+  banca: (
     [Prof. Dr. \ Instituição \ Presidente],
     [Prof. Dr. \ Instituição],
     [Prof. Dr. \ Instituição],
     [Prof. Dr. \ Instituição],
     [Prof. Dr. \ Instituição],
   ),
-  codly-habilitado: true,
   bibliografia: read("referencias.bib"),
-  print: false,
+  versao-impressao: false,
 )
 = Introdução
 

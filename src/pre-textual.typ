@@ -5,6 +5,7 @@
 #import "bibliography.typ": cite, references, register-bib
 #import "code-algo.typ": init-codly
 #import "@preview/codly-languages:0.1.1": codly-languages
+#import "@preview/datify:1.3.0": display-date
 #let _pre-titulo(nome) = heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper(nome))
 #let _logo() = {
   rect(width: 2.7cm, height: 2.7cm, stroke: (paint: luma(45%), thickness: 1pt, dash: "dashed"), radius: 4pt, align(
@@ -22,15 +23,15 @@
   set text(size: 12pt)
   if logo != none { if type(logo) == str { image(logo, width: 2.7cm) } else { logo } }
   v(0.3cm)
-  instituicao
+  upper(instituicao)
   v(4cm)
   autor
   v(5cm)
-  text(weight: "bold", titulo)
+  text(weight: "bold", upper(titulo))
   v(1fr)
-  local
+  upper(local)
   parbreak()
-  data
+  upper(str(data))
   v(1cm)
 }
 #let _single(body) = {
@@ -44,7 +45,7 @@
   autor
   v(1fr)
   v(1fr)
-  text(weight: "bold", titulo)
+  text(weight: "bold", upper(titulo))
   v(1fr)
   align(left, pad(left: 50%, _single({
     set par(justify: true, leading: 0.65em, spacing: 1.3em)
@@ -57,9 +58,9 @@
     }
   })))
   v(1fr)
-  local
+  upper(local)
   parbreak()
-  data
+  upper(str(data))
   v(1cm)
 }
 #let _ficha(ficha) = {
@@ -73,51 +74,80 @@
   autor: none,
   orientador: none,
   co-orientador: none,
-  instituicao: [INSTITUTO FEDERAL DA BAHIA],
+  instituicao: [Instituto Federal de Educação, Ciência e Tecnologia da Bahia],
   curso: [Análise e Desenvolvimento de Sistemas],
   local: "Santo Antônio de Jesus",
-  ano: none,
-  descricao: none,
+  data-banca: none,
   logo: none,
-  catalog-card: none,
+  ficha-catalografica: none,
   errata: none,
-  approval-text: none,
-  committee: (),
-  dedication: none,
-  acknowledgments: none,
-  epigraph: none,
+  texto-aprovacao: none,
+  banca: (),
+  dedicatoria: none,
+  agradecimentos: none,
+  epigrafe: none,
   resumo-conteudo: none,
   resumo-palavras: (),
   abstract-conteudo: none,
   abstract-palavras: (),
-  print: false,
-  codly-habilitado: false,
+  versao-impressao: false,
+  codly-habilitado: true,
   bibliografia: none,
   referencias-titulo: "REFERÊNCIAS",
   cor-links: _text-color,
   body,
 ) = {
+  assert(ficha-catalografica != none, message: "Parâmetro obrigatório ABNT ausente: ficha-catalografica")
+  assert(data-banca != none, message: "Parâmetro obrigatório ABNT ausente: data-banca")
+  assert(banca.len() > 0, message: "Parâmetro obrigatório ABNT ausente: banca")
+  assert(resumo-conteudo != none, message: "Parâmetro obrigatório ABNT ausente: resumo-conteudo")
+  assert(resumo-palavras.len() > 0, message: "Parâmetro obrigatório ABNT ausente: resumo-palavras")
+  assert(abstract-conteudo != none, message: "Parâmetro obrigatório ABNT ausente: abstract-conteudo")
+  assert(abstract-palavras.len() > 0, message: "Parâmetro obrigatório ABNT ausente: abstract-palavras")
+  assert(bibliografia != none, message: "Parâmetro obrigatório ABNT ausente: bibliografia")
+  let _ano = data-banca.year()
   set-config(
-    year: ano,
+    year: _ano,
     author: autor,
     titulo: titulo,
     orientador: orientador,
     curso: curso,
     cidade: local,
-    print: print,
+    versao-impressao: versao-impressao,
   )
   let _logo-val = if logo == none { _logo() } else if type(logo) == str { image(logo, width: 2.7cm) } else { logo }
   let _author-upper = if autor == none { none } else { upper(str(autor)) }
-  let _preamb = if descricao == none {
-    [Trabalho de Conclusão de Curso apresentado ao curso de #text(style: "italic")[Análise e Desenvolvimento de Sistemas] do Instituto Federal da Bahia, campus Santo Antônio de Jesus.]
-  } else { descricao }
+  // Preâmbulo parametrizado: compõe a partir de instituicao/curso/local (ABNT folha de rosto).
+  let _preamb = [Trabalho de Conclusão de Curso apresentado a #instituicao, campus #local, como requisito parcial para obtenção do grau de Tecnólogo em #curso.]
+  // Texto de aprovação parametrizado (estratégia let _preamb): montado a partir de autor/titulo/banca/local/ano/instituicao/curso.
+  let _texto-aprovacao-pad = {
+    let _autor-upper = upper(str(autor))
+    let _titulo-upper = upper(str(titulo))
+    let _ass = banca.enumerate().map(((i, m)) => {
+      let is-orientador = i == 0
+      stack(dir: ttb, spacing: 2pt, line(length: 10cm, stroke: 0.5pt), text(weight: "bold", m), if is-orientador { text(size: 10pt, [(Orientador)]) } else { none })
+    }).join(v(1.2cm))
+    stack(dir: ttb, spacing: 0pt,
+      align(center, text(weight: "bold", _autor-upper)),
+      v(2cm),
+      align(center, text(weight: "bold", _titulo-upper)),
+      v(1.5cm),
+      par(justify: true, leading: 0.65em, [A banca examinadora, abaixo listada, aprova o Trabalho de Conclusão de Curso #_titulo-upper elaborado por #_author-upper como requisito parcial para obtenção do grau de Tecnólogo em #curso, pelo #instituicao.]),
+      v(1cm),
+      align(center, [#local, #display-date(data-banca, pattern: "full")]),
+      v(1cm),
+      align(center, [Comissão Examinadora]),
+      v(1cm),
+      align(center, _ass),
+    )
+  }
   // global styles (ponto único de estilo: layout.typ)
-  show: _abnt-page.with(print: print)
+  show: _abnt-page.with(print: versao-impressao)
   show: _abnt-body
   show: _abnt-headings
   show: init-codly.with(enabled: codly-habilitado)
   show heading: set block(above: 1.5em, below: 1.5em)
-  if bibliografia != none { register-bib(bibliografia) }
+  register-bib(bibliografia)
   // alias @key → #cite("key") para motor custom (mantém @ nativo)
   show ref: it => {
     let k = str(it.target)
@@ -132,82 +162,72 @@
     }
   }
   // PRE-TEXTUAIS em ordem classic-ppgsi
-  _capa(_logo-val, instituicao, _author-upper, titulo, local, ano)
+  _capa(_logo-val, instituicao, _author-upper, titulo, local, _ano)
   _fim-de-folha()
   // A contagem recomeça após a capa: a folha de rosto é a folha 1.
   counter(page).update(1)
-  _folha-de-rosto(_author-upper, titulo, _preamb, orientador, co-orientador, local, ano)
-  if catalog-card != none {
-    // Ficha catalográfica no verso da folha de rosto (NBR 14724).
-    pagebreak()
-    _ficha(catalog-card)
-  }
+  _folha-de-rosto(_author-upper, titulo, _preamb, orientador, co-orientador, local, _ano)
+  // Ficha catalográfica no verso da folha de rosto (NBR 14724) — obrigatória.
+  pagebreak()
+  _ficha(ficha-catalografica)
   if errata != none {
     heading(level: 1, numbering: none, outlined: false, bookmarked: true, upper("Errata"))
     errata
     _fim-de-folha()
   }
-  if approval-text != none {
-    heading(level: 1, numbering: none, outlined: false, bookmarked: true, hide[ Folha de aprovação])
-    if type(approval-text) == str {
-      page(margin: 0cm, header: none, footer: none, image(approval-text, width: 100%, height: 100%, fit: "contain"))
-    } else {
-      _single({
-        set par(justify: true)
-        approval-text
-        v(3cm)
-        set align(center)
-        for member in committee {
-          v(1.2cm)
-          line(length: 10cm, stroke: 0.5pt)
-          member
-          parbreak()
-        }
-      })
-    }
+  heading(level: 1, numbering: none, outlined: false, bookmarked: true, hide[ Folha de aprovação])
+  if texto-aprovacao == none {
+    _single(_texto-aprovacao-pad)
+  } else if type(texto-aprovacao) == str {
+    page(margin: 0cm, header: none, footer: none, image(texto-aprovacao, width: 100%, height: 100%, fit: "contain"))
+  } else {
+    _single({
+      set par(justify: true)
+      texto-aprovacao
+      v(3cm)
+      set align(center)
+      for member in banca {
+        v(1.2cm)
+        line(length: 10cm, stroke: 0.5pt)
+        member
+        parbreak()
+      }
+    })
+  }
+  _fim-de-folha()
+  if dedicatoria != none {
+    v(1fr)
+    align(center, emph(dedicatoria))
+    v(1fr)
     _fim-de-folha()
   }
-  if dedication != none {
-    v(1fr)
-    align(center, emph(dedication))
-    v(1fr)
-    _fim-de-folha()
-  }
-  if acknowledgments != none {
+  if agradecimentos != none {
     _pre-titulo[AGRADECIMENTOS]
-    acknowledgments
+    agradecimentos
     _fim-de-folha()
   }
-  if epigraph != none {
+  if epigrafe != none {
     v(1fr)
-    align(right, emph(epigraph))
+    align(right, emph(epigrafe))
     _fim-de-folha()
   }
-  if resumo-conteudo != none {
-    _pre-titulo[RESUMO]
-    _single({
-      set par(first-line-indent: 0pt, spacing: 18pt)
-      resumo-conteudo
-      if resumo-palavras.len() > 0 {
-        parbreak()
-        [Palavras-chave: #(resumo-palavras.join(". ")).]
-      }
-    })
-    _fim-de-folha()
-  }
-  if abstract-conteudo != none {
-    _pre-titulo[ABSTRACT]
-    _single({
-      set par(first-line-indent: 0pt, spacing: 18pt)
-      set text(lang: "en")
-      abstract-conteudo
-      if abstract-palavras.len() > 0 {
-        parbreak()
-        [Keywords: #(abstract-palavras.join(". ")).]
-      }
-    })
-    _fim-de-folha()
-  }
+  _pre-titulo[RESUMO]
+  _single({
+    set par(first-line-indent: 0pt, spacing: 18pt)
+    resumo-conteudo
+    parbreak()
+    [Palavras-chave: #(resumo-palavras.join(". ")).]
+  })
+  _fim-de-folha()
+  _pre-titulo[ABSTRACT]
+  _single({
+    set par(first-line-indent: 0pt, spacing: 18pt)
+    set text(lang: "en")
+    abstract-conteudo
+    parbreak()
+    [Keywords: #(abstract-palavras.join(". ")).]
+  })
+  _fim-de-folha()
   // Lista pré-textual: renderiza título + outline apenas se houver itens.
   // query() em context enxerga o documento inteiro (forward reference nativa),
   // dispensando qualquer mecanismo de estado manual.
