@@ -2,7 +2,7 @@
 
 Documentação de uso do repositório para o aluno: instalação de pré-requisitos, configuração do template e guia rápido de escrita ABNT no Typst.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: README cobre o que é o projeto
 O README SHALL apresentar em pt-BR o que é o repositório, a que se destina (TCC ABNT IFBA SAJ ADS), normas atendidas e versão do Typst.
