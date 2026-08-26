@@ -132,7 +132,7 @@ Todo o documento é configurado no cabeçalho de `example/main.typ`:
   titulo: "Seu título aqui",
   autor: "Seu Nome",
   orientador: "Prof. Dr. Nome do Orientador",
-  ano: "2026",
+  data-banca: "04/08/2026",
   // ... demais campos abaixo
 )
 ```
@@ -141,19 +141,19 @@ Todo o documento é configurado no cabeçalho de `example/main.typ`:
 
 | Parâmetro | Obrigatório | Tipo | Padrão | Descrição |
 |---|---|---|---|---|
-| `titulo` | **sim** | `str` | — | Título do TCC (capa e folha de rosto). |
-| `autor` | **sim** | `str` | — | Nome do autor. |
-| `orientador` | **sim** | `str` | — | Nome do orientador. |
-| `ano` | **sim** | `str` | — | Ano de entrega. |
+| `titulo` | **sim** | `str` | — | Título do TCC (capa e folha de rosto). Renderizado em **CAIXA-ALTA** (NBR 14724). |
+| `autor` | **sim** | `str` | — | Nome do autor. Renderizado em **CAIXA-ALTA**. |
+| `orientador` | **sim** | `str` | — | Nome do orientador (caixa normal, NBR 14724). |
+| `data-banca` | **sim** | `str` | — | Data da banca (ex: `"04/08/2026"`). Ano é derivado automaticamente para capa/folha; data completa vai na folha de aprovação. |
 | `co-orientador` | não | `str`/`content` | `none` | Co-orientador. |
-| `instituicao` | não | `content` | `INSTITUTO FEDERAL DA BAHIA` | Instituição na capa. |
-| `curso` | não | `content` | `Análise e Desenvolvimento de Sistemas` | Curso. |
-| `local` | não | `str` | `Santo Antônio de Jesus` | Cidade. |
+| `instituicao` | não | `content` | `Instituto Federal de Educação, Ciência e Tecnologia da Bahia` | Instituição na capa. Renderizada em **CAIXA-ALTA**. |
+| `curso` | não | `content` | `Análise e Desenvolvimento de Sistemas` | Curso (usado no preâmbulo e folha de aprovação). |
+| `local` | não | `str` | `Santo Antônio de Jesus` | Cidade. Renderizada em **CAIXA-ALTA**. |
 | `logo` | não | `str`/`content`/`none` | Placeholder tracejado | Logo da capa (`"caminho/logo.png"` ou `image(...)`). |
 | `ficha-catalografica` | **sim** | `str`/`content` | — | Ficha catalográfica — `image("assets/ficha.pdf")` ou `"assets/ficha.pdf"`. Gera página no verso da folha de rosto. |
 | `errata` | não | `content`/`none` | `none` | Errata (opcional, pós-depósito). |
-| `texto-aprovacao` | **sim** | `str`/`content` | — | Texto da folha de aprovação; se `str`, tratado como imagem em página cheia. |
-| `banca` | **sim** | `array[content]` | — | Banca — usado quando `texto-aprovacao` é `content`. |
+| `texto-aprovacao` | não | `str`/`content`/`none` | `none` (auto-gerado) | Folha de aprovação. Se `none`, é **gerada automaticamente** a partir de `titulo`/`autor`/`banca`/`local`/`data-banca` (formato ABNT); se `str`, imagem em página cheia; se `content`, usa o fornecido. |
+| `banca` | **sim** | `array[content]` | — | Membros da banca. Primeiro é marcado como (Orientador) na versão auto-gerada. |
 | `dedicatoria` | não | `content`/`none` | `none` | Dedicatória. |
 | `agradecimentos` | não | `content`/`none` | `none` | Agradecimentos. |
 | `epigrafe` | não | `content`/`none` | `none` | Epígrafe. |
@@ -167,9 +167,9 @@ Todo o documento é configurado no cabeçalho de `example/main.typ`:
 | `referencias-titulo` | não | `str` | `REFERÊNCIAS` | Título da seção de referências. |
 | `cor-links` | não | `color` | `_text-color` | Cor dos links. |
 
-> `ficha-catalografica` e `texto-aprovacao` aceitam **caminho** (`str`) ou **conteúdo** (`image(...)` / `content`). Veja `example/main.typ`.
+> `ficha-catalografica` aceita **caminho** (`str`) ou **conteúdo** (`image(...)`).
 
-O preâmbulo da folha de rosto é gerado automaticamente: "Trabalho de Conclusão de Curso apresentado ao Instituto Federal de Educação, Ciência e Tecnologia da Bahia, campus Santo Antônio de Jesus, como requisito parcial para obtenção do grau de Tecnólogo em Análise e Desenvolvimento de Sistemas."
+> **Preâmbulo e folha de aprovação são gerados automaticamente** (estratégia `let _preamb`): o preâmbulo compõe `"Trabalho de Conclusão de Curso apresentado a #instituicao, campus #local, como requisito parcial para obtenção do grau de Tecnólogo em #curso."` e a folha de aprovação monta nome/título em caixa-alta, parágrafo da banca e `local` + `data-banca` + `Comissão Examinadora` + assinaturas.
 
 ### Exemplo mínimo copiável
 
@@ -180,7 +180,9 @@ O preâmbulo da folha de rosto é gerado automaticamente: "Trabalho de Conclusã
   titulo: "Meu TCC",
   autor: "João Silva",
   orientador: "Prof. Dr. Maria Souza",
-  ano: "2026",
+  data-banca: "04/08/2026",
+  banca: ([Prof. Me. Fulano - IFBA], [Prof. Dr. Ciclano - IFBA]),
+  ficha-catalografica: image("assets/ficha.pdf", width: 100%, height: 100%, fit: "contain"),
   resumo-conteudo: [Resumo do trabalho...],
   resumo-palavras: ("Palavra1", "Palavra2"),
   abstract-conteudo: [Abstract...],
