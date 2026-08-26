@@ -88,12 +88,12 @@
         align: align,
         stroke: none,
         inset: (x: 6pt, y: 3pt),
-        table.hline(stroke: 0.6pt),
+        table.hline(stroke: 1.5pt),
         ..if header != none {
-          (table.header(..header), table.hline(stroke: 0.6pt))
+          (table.header(..header), table.hline(stroke: 0.8pt))
         } else { () },
         ..rows.pos().flatten(),
-        table.hline(stroke: 0.6pt),
+        table.hline(stroke: 1.5pt),
       )
       _render-source(source)
     },

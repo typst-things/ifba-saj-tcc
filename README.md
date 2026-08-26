@@ -258,7 +258,8 @@ Fonte: `src/bibliography.typ` (`cite`, `prose`, `citacao-curta`, `citacao-longa`
 ### Abreviaturas, glossário, apêndices e anexos
 
 ```typst
-O #abbrev("ifba", long: "Instituto Federal da Bahia")[IFBA] é referência.
+O #abbrev("ifba", long: "Instituto Federal da Bahia") é referência.
+O #abbrev("ifba") novamente dá só a sigla.
 O termo #gloss("docker")[Plataforma de containers.] é central.
 
 #glossario() // imprime glossário no local desejado

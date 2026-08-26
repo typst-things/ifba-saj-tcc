@@ -18,18 +18,16 @@
   errata: [Elemento opcional para versão corrigida, depois de depositada.],
   // texto-aprovacao: none → auto-gerado (let _texto-aprovacao-pad); ou forneça content/str custom
   banca: (
-    [Prof. Dr. \ Instituição \ Presidente],
-    [Prof. Dr. \ Instituição],
-    [Prof. Dr. \ Instituição],
-    [Prof. Dr. \ Instituição],
-    [Prof. Dr. \ Instituição],
+    [Prof. Dr. (IFBA)],
+    [Prof. Dr. (IFBA)],
+    [Prof. Dr. (IFBA)],
   ),
   bibliografia: read("referencias.bib"),
   versao-impressao: false,
 )
 = Introdução
 
-O #abbrev("ifba", long: "Instituto Federal da Bahia")[Instituição federal] campus SAJ e o curso de #abbrev("ads", long: "Análise e Desenvolvimento de Sistemas")[Curso ADS] são referência. O #abbrev("ifba", long: "Instituto Federal da Bahia")[] novamente. Como afirma #prose("martin2008"), o código limpo é essencial. O termo #gloss("microsserviços")[Estilo arquitetural com serviços independentes.] é central. O #gloss("docker")[Plataforma de containers.] também.
+O #abbrev("ifba", long: "Instituto Federal da Bahia") campus SAJ e o curso de #abbrev("ads", long: "Análise e Desenvolvimento de Sistemas") são referência. O #abbrev("ifba") novamente. Como afirma #prose("martin2008"), o código limpo é essencial. O termo #gloss("microsserviços")[Estilo arquitetural com serviços independentes.] é central. O #gloss("docker")[Plataforma de containers.] também.
 
 #lorem(60)
 
@@ -57,12 +55,45 @@ Ver @figura-logo e @figura-arquitetura.
 
 #tabela(
   caption: [Métricas sob carga],
+  align: (left, center, right),
   columns: (1fr, 1fr, 1fr),
   header: ([Módulo], [Tempo de Resposta (ms)], [Uso de CPU (%)]),
   ..csv("data/resultados.csv"),
 ) <tabela-resultados>
 
-#lorem(60)
+#lorem(20)
+#tabela(
+  caption: [Métricas novas sob carga],
+  align: (left, center, center),
+  columns: (1fr, 1fr, 1fr),
+  header: ([Módulo], [Tempo de Resposta (ms)], [Uso de CPU (%)]),
+  [Autenticação],table.cell(rowspan: 2,align: center + horizon, stroke:1pt)[1200],[12.4],
+  [Busca],[45.8],
+  [Relatórios],[3500],[88.1],
+  [Notificações],table.cell(colspan: 2, stroke:1pt)[24.7],
+) <tabela-resultados-novo>
+
+#lorem(20)
+
+#align(center)[
+  #table(
+    columns: (auto, 1fr, 1fr), // Define a largura das colunas
+    align: (left, center, center), // Alinhamento do texto
+    stroke: none, // Remove todas as bordas padrão (grades)
+
+    // Adiciona as linhas horizontais estilo IBGE manualmente
+    table.hline(stroke: 1.5pt), // Top rule (linha grossa superior)
+    [Item], [Quantidade], [Preço],
+    table.hline(stroke: 0.8pt), // Mid rule (linha média sob o cabeçalho)
+
+    [Produto A], [10], [R\$ 15,00],
+    [Produto B], [5], [R\$ 30,00],
+    [Produto C], [2], [R\$ 120,00],
+    
+    table.hline(stroke: 1.5pt) // Bottom rule (linha grossa inferior)
+  )
+]
+
 
 #quadro(
   ([Critério], [PostgreSQL], [MongoDB], [Modelo], [Relacional], [Documentos]),

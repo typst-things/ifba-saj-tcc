@@ -125,7 +125,7 @@
     let _titulo-upper = upper(str(titulo))
     let _ass = banca.enumerate().map(((i, m)) => {
       let is-orientador = i == 0
-      stack(dir: ttb, spacing: 2pt, line(length: 10cm, stroke: 0.5pt), text(weight: "bold", m), if is-orientador { text(size: 10pt, [(Orientador)]) } else { none })
+      stack(dir: ttb, spacing: 2pt, line(length: 10cm, stroke: 0.5pt), text(weight: "bold", m), if is-orientador { text(size: 10pt, [Orientador]) } else { none })
     }).join(v(1.2cm))
     stack(dir: ttb, spacing: 0pt,
       align(center, text(weight: "bold", _autor-upper)),

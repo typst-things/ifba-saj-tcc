@@ -3,15 +3,14 @@
 #let _gloss-state = state("ifba-gloss", (:))
 #let _abbrev-state = state("ifba-abbrev", (:))
 
-#let abbrev(key, long: none, body) = context {
+#let abbrev(key, long: none) = context {
   let abbrev-key = if type(key) == str { key } else { str(key) }
   let cur = _abbrev-state.get()
   if abbrev-key in cur {
     upper(abbrev-key)
   } else {
     if long == none { panic("abbrev: long required on first use for '" + abbrev-key + "'") }
-    let entry = (long: long, definition: body)
-    _abbrev-state.update(s => { s.insert(abbrev-key, entry); s })
+    _abbrev-state.update(s => { s.insert(abbrev-key, (long: long)); s })
     [#long (#upper(abbrev-key))]
   }
 }

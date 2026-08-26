@@ -9,7 +9,7 @@ Glossário e lista de abreviaturas construídos inline durante a escrita (src/gl
 Na primeira ocorrência, `abbrev` SHALL registrar a sigla e exibir "longo (SIGLA)"; nas ocorrências seguintes, apenas "SIGLA" em maiúsculas. O `long` é obrigatório na primeira uso, sob pena de erro.
 
 #### Scenario: Primeira e segunda ocorrência
-- **WHEN** `#abbrev("ifba", long: "Instituto Federal da Bahia")[...]` e depois `#abbrev("ifba")`
+- **WHEN** `#abbrev("ifba", long: "Instituto Federal da Bahia")` e depois `#abbrev("ifba")`
 - **THEN** a primeira exibe "Instituto Federal da Bahia (IFBA)" e a segunda apenas "IFBA"
 
 ### Requirement: Termo de glossário inline
